@@ -12,6 +12,10 @@ ifeq ($(WPA_SUPPLICANT_VERSION),VER_0_8_X)
     WPA_SUPPL_DIR = external/wpa_supplicant_8/wpa_supplicant
 endif
 
+ifeq ($(WPA_SUPPLICANT_VERSION),VER_0_8_X_TI)
+    WPA_SUPPL_DIR = external/wpa_supplicant_8_ti/wpa_supplicant
+endif
+
 include $(WPA_SUPPL_DIR)/android.config
 
 ifneq ($(BOARD_WPA_SUPPLICANT_DRIVER),)
@@ -55,14 +59,19 @@ INCLUDES = $(WPA_SUPPL_DIR) \
     $(WPA_SUPPL_DIR)/src/drivers \
     $(WPA_SUPPL_DIR)/src/l2_packet \
     $(WPA_SUPPL_DIR)/src/utils \
-    $(WPA_SUPPL_DIR)/src/wps \
-    external/libnl-headers
+    $(WPA_SUPPL_DIR)/src/wps
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := lib_driver_cmd_wl12xx
 LOCAL_MODULE_TAGS := eng
 LOCAL_SHARED_LIBRARIES := libc libcutils
+ifneq ($(wildcard external/libnl),)
+INCLUDES += external/libnl/include
+LOCAL_SHARED_LIBRARIES += libnl
+else
+INCLUDES += external/libnl-headers
 LOCAL_STATIC_LIBRARIES := libnl_2
+endif
 LOCAL_CFLAGS := $(L_CFLAGS)
 LOCAL_SRC_FILES := $(L_SRC)
 LOCAL_C_INCLUDES := $(INCLUDES)
